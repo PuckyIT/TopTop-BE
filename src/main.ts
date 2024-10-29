@@ -5,12 +5,13 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger'; // Nhập các mô-đun Swagger
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
-  const port = configService.get('PORT');
-
+  const port = configService.get('PORT') || 8080; 
+  
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true,
     forbidNonWhitelisted: true,
@@ -19,10 +20,20 @@ async function bootstrap() {
 
   // Bật CORS
   app.enableCors({
-    origin: 'http://localhost:3000', // Thay đổi nếu cần thiết
+    origin: 'https://top-top.vercel.app', // Thay đổi nếu cần thiết
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
+
+  // Cấu hình Swagger
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('API Documentation') // Tiêu đề cho tài liệu
+    .setDescription('API description for your project') // Mô tả cho tài liệu
+    .setVersion('1.0') // Phiên bản API
+    .build();
+  
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('api-docs', app, document); // Thiết lập đường dẫn cho Swagger
 
   await app.listen(port);
 }
