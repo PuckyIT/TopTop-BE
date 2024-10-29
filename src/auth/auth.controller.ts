@@ -35,9 +35,9 @@ export class AuthController {
 
     if (result) {
       const { access_token, user } = result;
-      return res.redirect(`http://localhost:3000/login/callback?token=${access_token}&email=${user.email}&avatar=${user.avatar}`);
+      return res.redirect(`https://top-top.vercel.app/login/callback?token=${access_token}&email=${user.email}&avatar=${user.avatar}`);
     } else {
-      return res.redirect('http://localhost:3000/login');
+      return res.redirect('https://top-top.vercel.app/login');
     }
   }
 
