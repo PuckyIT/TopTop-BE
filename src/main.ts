@@ -33,7 +33,7 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup('api-docs', app, document); // Thiết lập đường dẫn cho Swagger
+  SwaggerModule.setup('api', app, document); // Thiết lập đường dẫn cho Swagger
 
   await app.listen(port);
 }
