@@ -17,12 +17,13 @@ export class GitHubStrategy extends PassportStrategy(Strategy, 'github') {
   }
 
   async validate(accessToken: string, refreshToken: string, profile: any) {
-    // Xử lý thông tin người dùng từ GitHub
-    return {
-      id: profile.id,
-      username: profile.username,
-      email: profile.emails[0].value, // Lấy email đầu tiên
-      avatar: profile.photos[0].value, // Lấy ảnh đại diện
-    };
+    try {
+      // Pass both the profile and accessToken to validateOAuthUser
+      return this.authService.validateOAuthUser(profile, accessToken);
+    } catch (error) {
+      console.error('Error during GitHub OAuth validation:', error);
+      throw error;
+    }
   }
+  
 }

@@ -18,10 +18,11 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
 
   async validate(accessToken: string, refreshToken: string, profile: any, done: VerifyCallback): Promise<any> {
     try {
-      const user = await this.authService.validateOAuthUser(profile);
-      done(null, user); // Trả về user nếu thành công
+      // Pass both the profile and accessToken to validateOAuthUser
+      const user = await this.authService.validateOAuthUser(profile, accessToken);
+      done(null, user); // Return user if successful
     } catch (error) {
-      done(error, false); // Xử lý lỗi trong quá trình validate
+      done(error, false); // Handle error in validation
     }
-  } 
+  }
 }

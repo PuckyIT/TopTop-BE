@@ -49,13 +49,17 @@ export class AuthController {
   async githubAuth(@Req() req) {
     // Đường dẫn này sẽ chuyển hướng đến GitHub để xác thực
   }
-
+  
   @Get('github/callback')
   @UseGuards(AuthGuard('github'))
-  githubAuthCallback(@Req() req, @Res() res) {
-    // Xử lý callback từ GitHub
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const user = req.user; // Thông tin người dùng
-    res.redirect('/home'); // Chuyển hướng sau khi đăng nhập thành công
+  async githubAuthCallback(@Req() req, @Res() res) {
+    const result = await this.authService.githubLogin(req);
+
+    if (result) {
+      const { access_token, user } = result;
+      return res.redirect(`https://top-top.vercel.app/login/callback?token=${access_token}&email=${user.email}&avatar=${user.avatar}`);
+    } else {
+      return res.redirect('https://top-top.vercel.app/login');
+    }
   }
 }
