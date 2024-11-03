@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from 'src/users/users.service';
@@ -40,7 +40,7 @@ export class AuthService {
     };
   }
 
-  async validateOAuthUser(profile: any, accessToken: string): Promise<User> {
+  async validateOAuthUser(profile: any, accessToken: string, username?: string): Promise<User> {
     // Retrieve email and avatar
     let email = profile.emails && profile.emails.length ? profile.emails[0].value : null;
     const avatar = profile.photos && profile.photos.length ? profile.photos[0].value : profile._json?.avatar_url;
@@ -66,25 +66,34 @@ export class AuthService {
       }
     }
 
-    // Rest of your user creation or updating logic
-    let user = await this.usersService.findOneByEmail(email);
-
-    if (!user) {
-      const newUser = await this.usersService.create({
-        email,
-        password: null,
-        avatar,
-      });
-      user = newUser;
-    } else {
-      if (avatar && user.avatar !== avatar) {
-        user.avatar = avatar;
-        await user.save();
+    // Check if the user already exists by email
+    const existingUser = await this.usersService.findOneByEmail(email);
+    if (existingUser) {
+      // Update avatar if it has changed
+      if (avatar && existingUser.avatar !== avatar) {
+        existingUser.avatar = avatar;
+        await existingUser.save();
       }
+      return existingUser; // User already exists
     }
 
-    return user;
+    // User does not exist, check if the username is unique
+    const isUsernameTaken = await this.usersService.findOneByUsername(username); // Make sure this method exists in your UsersService
+    if (isUsernameTaken) {
+      throw new ConflictException('Username is already taken. Please choose a different username.');
+    }
+
+    // Create a new user since no existing user was found
+    const newUser = await this.usersService.create({
+      email,
+      password: null,
+      username,
+      avatar,
+    });
+
+    return newUser;
   }
+
 
   async googleLogin(req: any) {
     if (!req.user) {

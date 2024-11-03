@@ -17,25 +17,32 @@ export class UsersService {
   [x: string]: any;
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>, private readonly mailerService: MailerService) { }
 
-  async create(createUserDto: { email: string, password: string | null, avatar?: string | null }): Promise<User> {
-    const { email, password, avatar } = createUserDto;
-
+  async create(createUserDto: { email: string, password: string | null, avatar?: string | null, username: string }): Promise<User> {
+    const { email, password, avatar, username } = createUserDto;
+  
+    // Kiểm tra nếu username đã tồn tại
+    const existingUser = await this.userModel.findOne({ username });
+    if (existingUser) {
+      throw new ConflictException('Username đã tồn tại. Vui lòng chọn username khác.');
+    }
+  
     // Kiểm tra nếu password tồn tại (chỉ hash nếu không phải OAuth)
     let hashedPassword = null;
     if (password) {
       const salt = await bcrypt.genSalt(10);
       hashedPassword = await bcrypt.hash(password, salt);
     }
-
+  
     const createdUser = new this.userModel({
       email,
       password: hashedPassword, // Lưu hashedPassword hoặc null
+      username,
       avatar, // Lưu avatar nếu có
     });
-
+  
     return createdUser.save();
   }
-
+  
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<{ message: string }> {
     const { email } = forgotPasswordDto;
 
@@ -111,9 +118,9 @@ export class UsersService {
 
   async getProfile(id: string): Promise<ProfileResponseDto> {
     const user = await this.userModel.findById(id).exec();
-  
+
     if (!user) throw new NotFoundException('Không tìm thấy người dùng');
-  
+
     return {
       username: user.username || 'No Name',
       bio: user.bio || '',
@@ -122,7 +129,7 @@ export class UsersService {
       likesCount: user.likesCount || 0,
       avatar: user.avatar,
     };
-  }  
+  }
 
   async findOne(id: string): Promise<User | null> {
     return this.userModel.findById(id).exec();
