@@ -109,18 +109,22 @@ export class UsersService {
     return `This action removes a #${id} user`;
   }
 
-  async getProfile(userId: string): Promise<ProfileResponseDto> {
-    const user = await this.userModel.findById(userId).exec();
-
-    if (!user) throw new NotFoundException('User not found');
-
+  async getProfile(id: string): Promise<ProfileResponseDto> {
+    const user = await this.userModel.findById(id).exec();
+  
+    if (!user) throw new NotFoundException('Không tìm thấy người dùng');
+  
     return {
-      username: user.username,
+      username: user.username || 'No Name',
       bio: user.bio || '',
       followersCount: user.followersCount || 0,
       followingCount: user.followingCount || 0,
       likesCount: user.likesCount || 0,
       avatar: user.avatar,
     };
+  }  
+
+  async findOne(id: string): Promise<User | null> {
+    return this.userModel.findById(id).exec();
   }
 }

@@ -1,14 +1,13 @@
 /* eslint-disable prettier/prettier */
 // user.controller.ts
 
-import { Controller, Get, Post, Body, Param, Delete, UseGuards, Put, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, UseGuards, Put } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UpdateUserDto } from 'src/users/dto/update-user.dto';
 import { ForgotPasswordDto } from 'src/users//dto/forgot-password.dto';
 import { ResetPasswordDto } from 'src/users/dto/reset-password.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { ProfileResponseDto } from './dto/profile-response.dto';
 
 @Controller('users')
 export class UsersController {
@@ -25,8 +24,8 @@ export class UsersController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    return this.usersService.findOne(id);
   }
 
   @Put(':id')
@@ -49,9 +48,9 @@ export class UsersController {
     return this.usersService.resetPassword(otp, resetPasswordDto);
   }
 
-  @Get('profile')
+  @Get('profile/:id')
   @UseGuards(AuthGuard('jwt'))
-  async getProfile(@Req() req): Promise<ProfileResponseDto> {
-    return this.usersService.getProfile(req.user._id);
-  }
+  async getProfile(@Param('id') id: string) {
+    return this.usersService.getProfile(id);
+  }  
 }
