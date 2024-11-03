@@ -34,6 +34,22 @@ export class User {
   @Prop({ type: String })
   avatar?: string;
 
+  @Prop({ required: true, unique: true })
+  username: string;
+
+  @Prop({ default: '' })
+  bio?: string;
+
+  @Prop({ default: 0 })
+  followersCount: number;
+
+  @Prop({ default: 0 })
+  followingCount: number;
+
+  @Prop({ default: 0 })
+  likesCount: number;
+
+
   constructor(user: Partial<User>) { // Sử dụng Partial để cho phép tạo đối tượng không đầy đủ
     this._id = user._id ? user._id.toString() : undefined; // Chỉ lấy _id nếu có
     this.email = user.email;

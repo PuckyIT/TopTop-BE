@@ -10,6 +10,7 @@ import * as bcrypt from 'bcrypt';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ForgotPasswordDto } from 'src/users/dto/forgot-password.dto';
 import { ResetPasswordDto } from 'src/users/dto/reset-password.dto';
+import { ProfileResponseDto } from './dto/profile-response.dto';
 
 @Injectable()
 export class UsersService {
@@ -106,5 +107,20 @@ export class UsersService {
 
   remove(id: number) {
     return `This action removes a #${id} user`;
+  }
+
+  async getProfile(userId: string): Promise<ProfileResponseDto> {
+    const user = await this.userModel.findById(userId).exec();
+
+    if (!user) throw new NotFoundException('User not found');
+
+    return {
+      username: user.username,
+      bio: user.bio || '',
+      followersCount: user.followersCount || 0,
+      followingCount: user.followingCount || 0,
+      likesCount: user.likesCount || 0,
+      avatar: user.avatar,
+    };
   }
 }

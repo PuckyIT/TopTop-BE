@@ -7,8 +7,8 @@ import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UpdateUserDto } from 'src/users/dto/update-user.dto';
 import { ForgotPasswordDto } from 'src/users//dto/forgot-password.dto';
 import { ResetPasswordDto } from 'src/users/dto/reset-password.dto';
-import { JwtAuthGuard } from 'src/jwt/jwt-auth.guard';
 import { AuthGuard } from '@nestjs/passport';
+import { ProfileResponseDto } from './dto/profile-response.dto';
 
 @Controller('users')
 export class UsersController {
@@ -49,16 +49,9 @@ export class UsersController {
     return this.usersService.resetPassword(otp, resetPasswordDto);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Get()
-  getProfile() {
-    return { message: 'This route is protected' };
-  }
-
-  @Get('me')
-  @UseGuards(AuthGuard('jwt'))  // Bảo vệ route với JWT
-  getMe(@Req() req) {
-    // req.user sẽ chứa thông tin người dùng từ token
-    return req.user;
+  @Get('profile')
+  @UseGuards(AuthGuard('jwt'))
+  async getProfile(@Req() req): Promise<ProfileResponseDto> {
+    return this.usersService.getProfile(req.user._id);
   }
 }

@@ -25,5 +25,4 @@ export class GitHubStrategy extends PassportStrategy(Strategy, 'github') {
       throw error;
     }
   }
-  
 }
