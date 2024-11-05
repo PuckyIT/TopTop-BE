@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-// user.module.ts
+// user/user.module.ts
 
 import { Module } from '@nestjs/common';
 import { UsersService } from './users.service';

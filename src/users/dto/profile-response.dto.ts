@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-// profile-response.dto.ts
+// user/dto/profile-response.dto.ts
 
 export class ProfileResponseDto {
     username: string;

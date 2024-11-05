@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-// login-user.dto.ts
+// user/dto/login-user.dto.ts
 
 export class LoginUserDto {
     email: string;

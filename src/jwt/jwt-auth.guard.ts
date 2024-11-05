@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-// jwt-auth.guard.ts
+// jwt/jwt-auth.guard.ts
 
 import { Injectable } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';

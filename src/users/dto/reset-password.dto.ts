@@ -1,4 +1,5 @@
 /* eslint-disable prettier/prettier */
+// user/dto/reset-password.dto.ts
 
 import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
 

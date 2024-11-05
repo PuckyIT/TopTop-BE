@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-// user.service.ts
+// user/user.service.ts
 
 import { UpdateUserDto } from 'src/users/dto/update-user.dto';
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
@@ -107,10 +107,13 @@ export class UsersService {
     return this.userModel.findOne({ email }).exec();
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
+  async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
+    const user = await this.userModel.findByIdAndUpdate(id, updateUserDto, { new: true });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
+  }  
 
   remove(id: number) {
     return `This action removes a #${id} user`;

@@ -1,4 +1,5 @@
 /* eslint-disable prettier/prettier */
+// auth/auth.service.ts
 
 import { ConflictException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -14,7 +15,8 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) { }
 
-  async validateUser(email: string, password: string): Promise<any> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async validateUser(email: string, password: string, username: string): Promise<any> {
     const user = await this.usersService.findOneByEmail(email);
     if (user && (await bcrypt.compare(password, user.password))) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -34,7 +36,7 @@ export class AuthService {
       user: {
         id: user._id,
         email: user.email,
-        name: user.name,
+        username: user.username,
         avatar: user.avatar, // Nếu có
       },
     };
@@ -134,7 +136,7 @@ export class AuthService {
         id: user._id,
         email: user.email,
         name: user.name,
-        avatar: user.avatar, // Avatar từ cơ sở dữ liệu
+        avatar: user.avatar,
       },
     };
   }

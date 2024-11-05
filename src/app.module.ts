@@ -8,11 +8,13 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { AuthModule } from './auth/auth.module';
+import { VideosModule } from './videos/videos.module';
 
 @Module({
   imports: [
     UsersModule,
     AuthModule,
+    VideosModule,
     ConfigModule.forRoot({ isGlobal: true }),
     MailerModule.forRootAsync({
       imports: [ConfigModule],

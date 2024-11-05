@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-// create-user.dto.ts
+// user/dto/create-user.dto.ts
 
 import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
 
