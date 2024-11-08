@@ -1,7 +1,13 @@
 /* eslint-disable prettier/prettier */
 // user/dto/update-user.dto.ts
 
-import { IsOptional, IsString, IsInt } from 'class-validator';
+import { IsOptional, IsString, IsInt, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+
+class AvatarDto {
+  @IsString()
+  uid: string;
+}
 
 export class UpdateUserDto {
   @IsOptional()
@@ -13,8 +19,9 @@ export class UpdateUserDto {
   bio?: string;
 
   @IsOptional()
-  @IsString()
-  avatar?: string;
+  @ValidateNested()
+  @Type(() => AvatarDto)
+  avatar?: AvatarDto;
 
   @IsOptional()
   @IsInt()

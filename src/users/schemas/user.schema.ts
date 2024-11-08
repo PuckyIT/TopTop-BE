@@ -34,7 +34,7 @@ export class User {
   @Prop({ type: String })
   avatar?: string;
 
-  @Prop({ required: true, unique: true })
+  @Prop({ unique: true })
   username: string;
 
   @Prop({ default: '' })
