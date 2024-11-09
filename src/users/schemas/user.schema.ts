@@ -31,8 +31,8 @@ export class User {
   @Prop({ type: Date })
   resetOtpExpire: Date;
 
-  @Prop({ type: String })
-  avatar?: string;
+  @Prop({ type: Object })
+  avatar?: { uid: string };
 
   @Prop({ unique: true })
   username: string;
@@ -50,16 +50,14 @@ export class User {
   likesCount: number;
 
 
-  constructor(user: Partial<User>) { // Sử dụng Partial để cho phép tạo đối tượng không đầy đủ
-    this._id = user._id ? user._id.toString() : undefined; // Chỉ lấy _id nếu có
+  constructor(user: Partial<User>) {
+    this._id = user._id ? user._id.toString() : undefined;
     this.email = user.email;
     this.password = user.password;
-    this.role = user.role || 'user'; // Giá trị mặc định cho role
-    this.isActive = user.isActive || false; // Giá trị mặc định cho isActive
-    this.createdAt = user.createdAt || new Date(); // Giá trị mặc định cho createdAt
-    this.resetOtp = user.resetOtp;
-    this.resetOtpExpire = user.resetOtpExpire;
-    this.avatar = user.avatar; // Lưu avatar
+    this.role = user.role || 'user';
+    this.isActive = user.isActive || false;
+    this.createdAt = user.createdAt || new Date();
+    this.avatar = user.avatar;
   }
 }
 

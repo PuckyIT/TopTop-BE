@@ -17,13 +17,18 @@ export class UsersService {
   [x: string]: any;
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>, private readonly mailerService: MailerService) { }
 
-  async create(createUserDto: { email: string, password: string | null, avatar?: string | null, username: string }): Promise<User> {
+  async create(createUserDto: { email: string, password: string | null, avatar?: { uid: string } | null, username: string }): Promise<User> {
     const { email, password, avatar, username } = createUserDto;
   
     // Kiểm tra nếu username đã tồn tại
     const existingUser = await this.userModel.findOne({ username });
     if (existingUser) {
       throw new ConflictException('Username đã tồn tại. Vui lòng chọn username khác.');
+    }
+  
+    let avatarUid = null;
+    if (avatar && avatar.uid) {  // avatar có thể là null, nên bạn không cần kiểm tra typeof avatar
+      avatarUid = avatar.uid;
     }
   
     // Kiểm tra nếu password tồn tại (chỉ hash nếu không phải OAuth)
@@ -37,12 +42,12 @@ export class UsersService {
       email,
       password: hashedPassword, // Lưu hashedPassword hoặc null
       username,
-      avatar, // Lưu avatar nếu có
+      avatar: avatarUid,  // avatarUid sẽ là null nếu không có avatar
     });
   
     return createdUser.save();
-  }
-  
+  }  
+
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<{ message: string }> {
     const { email } = forgotPasswordDto;
 
@@ -108,12 +113,27 @@ export class UsersService {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
+    // Nếu avatar là đối tượng với uid, chỉ lấy uid và lưu dưới dạng chuỗi
+    if (updateUserDto.avatar && updateUserDto.avatar.uid) {
+      updateUserDto.avatar = { uid: updateUserDto.avatar.uid }; 
+    }
+  
     const user = await this.userModel.findByIdAndUpdate(id, updateUserDto, { new: true });
     if (!user) {
       throw new NotFoundException('User not found');
     }
     return user;
   }  
+
+  async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<User> {
+    const user = await this.userModel.findByIdAndUpdate(id, updateUserDto, { new: true });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return user;
+  }
 
   remove(id: number) {
     return `This action removes a #${id} user`;

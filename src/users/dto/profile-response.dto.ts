@@ -7,5 +7,5 @@ export class ProfileResponseDto {
     followersCount: number;
     followingCount: number;
     likesCount: number;
-    avatar?: string;
+    avatar?: { uid: string };
 }

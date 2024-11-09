@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 // user/user.controller.ts
 
-import { Controller, Get, Post, Body, Param, Delete, UseGuards, Put, Req, Patch, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, UseGuards, Put, Req, Patch, BadRequestException} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UpdateUserDto } from 'src/users/dto/update-user.dto';
@@ -70,11 +70,16 @@ export class UsersController {
 
   @Patch('profile')
   @UseGuards(JwtAuthGuard)
-  async updateProfile(@Req() req, @Body() updateData: { username?: string; avatar?: string }) {
-    // `req.user` contains the authenticated user data
+  async updateProfile(@Req() req, @Body() updateData: UpdateUserDto) {
     const userId = req.user._id;
 
-    // Update the user's profile with provided data
+    // Nếu có avatar, đảm bảo rằng bạn gán đúng UID vào updateData
+    if (updateData.avatar && updateData.avatar.uid) {
+      // Giả sử avatar.uid là đường dẫn hoặc tên tệp sau khi upload
+      updateData.avatar = { uid: updateData.avatar.uid }; // Hoặc lưu URL nếu cần
+    }
+
+    // Cập nhật thông tin người dùng
     const updatedUser = await this.usersService.updateUser(userId, updateData);
 
     return {
