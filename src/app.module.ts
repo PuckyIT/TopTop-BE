@@ -9,12 +9,14 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { AuthModule } from './auth/auth.module';
 import { VideosModule } from './videos/videos.module';
+import { MulterModule } from './configs/multer/multer.module';
 
 @Module({
   imports: [
     UsersModule,
     AuthModule,
     VideosModule,
+    MulterModule,
     ConfigModule.forRoot({ isGlobal: true }),
     MailerModule.forRootAsync({
       imports: [ConfigModule],
@@ -37,7 +39,7 @@ import { VideosModule } from './videos/videos.module';
         uri: configService.get<string>('MONGODB_URI'),
       }),
       inject: [ConfigService],
-    })
+    }),
   ],
 
   controllers: [AppController],

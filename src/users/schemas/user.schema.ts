@@ -32,7 +32,7 @@ export class User {
   resetOtpExpire: Date;
 
   @Prop({ type: Object })
-  avatar?: { uid: string };
+  avatar?: string;
 
   @Prop({ unique: true })
   username: string;

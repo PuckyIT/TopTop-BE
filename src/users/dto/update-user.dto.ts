@@ -1,13 +1,7 @@
 /* eslint-disable prettier/prettier */
 // user/dto/update-user.dto.ts
 
-import { IsOptional, IsString, IsInt, ValidateNested } from 'class-validator';
-import { Type } from 'class-transformer';
-
-class AvatarDto {
-  @IsString()
-  uid: string;
-}
+import { IsOptional, IsString, IsInt, IsUrl } from 'class-validator';
 
 export class UpdateUserDto {
   @IsOptional()
@@ -19,13 +13,11 @@ export class UpdateUserDto {
   bio?: string;
 
   @IsOptional()
-  @ValidateNested()
-  @Type(() => AvatarDto)
-  avatar?: AvatarDto;
-
+  @IsUrl({}, { message: 'Avatar must be a valid URL' })
+  avatar?: string; 
   @IsOptional()
   @IsInt()
-  followerCount?: number;
+  followersCount?: number;
 
   @IsOptional()
   @IsInt()
@@ -33,5 +25,5 @@ export class UpdateUserDto {
 
   @IsOptional()
   @IsInt()
-  likeCount?: number;
+  likesCount?: number;
 }

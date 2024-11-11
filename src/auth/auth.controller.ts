@@ -4,7 +4,6 @@
 import { Controller, Post, Body, UnauthorizedException, Get, UseGuards, Req, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
-import { JwtAuthGuard } from 'src/jwt/jwt-auth.guard';
 import { Request, Response } from 'express';
 
 @Controller('auth')
@@ -40,7 +39,7 @@ export class AuthController {
   @UseGuards(AuthGuard('google'))
   async googleAuthCallback(@Req() req, @Res() res) {
     const result = await this.authService.googleLogin(req);
-
+  
     if (result) {
       const { access_token, user } = result;
       return res.redirect(`https://top-top.vercel.app/login/callback?token=${access_token}&email=${user.email}&avatar=${user.avatar}`);
@@ -48,7 +47,7 @@ export class AuthController {
       return res.redirect('https://top-top.vercel.app/login');
     }
   }
-
+  
   @Get('github')
   @UseGuards(AuthGuard('github'))
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -60,18 +59,12 @@ export class AuthController {
   @UseGuards(AuthGuard('github'))
   async githubAuthCallback(@Req() req, @Res() res) {
     const result = await this.authService.githubLogin(req);
-
+  
     if (result) {
       const { access_token, user } = result;
       return res.redirect(`https://top-top.vercel.app/login/callback?token=${access_token}&email=${user.email}&avatar=${user.avatar}`);
     } else {
       return res.redirect('https://top-top.vercel.app/login');
-    }
-  }
-
-  @Get('profile')
-  @UseGuards(JwtAuthGuard)
-  async getProfile(@Req() req) {
-    return req.user;
+    } 
   }
 }

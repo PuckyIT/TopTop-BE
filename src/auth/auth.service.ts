@@ -37,55 +37,54 @@ export class AuthService {
         id: user._id,
         email: user.email,
         username: user.username,
-        avatar: user.avatar, // Nếu có
+        avatar: user.avatar,
+        role: user.role,
+        createdAt: user.createdAt,
+        isActive: user.isActive = true,
+        bio: user.bio,
+        followersCount: user.followersCount,
+        followingCount: user.followingCount,
+        likesCount: user.likesCount
       },
     };
   }
 
   async validateOAuthUser(profile: any, accessToken: string, username?: string): Promise<User> {
-    // Retrieve email and avatar
     let email = profile.emails && profile.emails.length ? profile.emails[0].value : null;
     const avatar = profile.photos && profile.photos.length ? profile.photos[0].value : profile._json?.avatar_url;
 
-    // Fetch email from GitHub API if not found in the profile
     if (!email) {
       try {
         const response = await axios.get('https://api.github.com/user/emails', {
-          headers: {
-            Authorization: `token ${accessToken}`,
-          },
+          headers: { Authorization: `token ${accessToken}` },
         });
         const emails = response.data;
         const primaryEmail = emails.find((email: any) => email.primary)?.email;
         if (primaryEmail) {
           email = primaryEmail;
         } else {
-          throw new Error('Primary email not found in GitHub response');
+          throw new Error('Primary email not found');
         }
       } catch (error) {
         console.error('Error fetching email from GitHub:', error);
-        throw new Error('Email not found in GitHub profile');
+        throw new Error('Email not found');
       }
     }
 
-    // Check if the user already exists by email
     const existingUser = await this.usersService.findOneByEmail(email);
     if (existingUser) {
-      // Update avatar if it has changed
       if (avatar && existingUser.avatar !== avatar) {
         existingUser.avatar = avatar;
         await existingUser.save();
       }
-      return existingUser; // User already exists
+      return existingUser;
     }
 
-    // User does not exist, check if the username is unique
-    const isUsernameTaken = await this.usersService.findOneByUsername(username); // Make sure this method exists in your UsersService
+    const isUsernameTaken = await this.usersService.findOneByUsername(username);
     if (isUsernameTaken) {
-      throw new ConflictException('Username is already taken. Please choose a different username.');
+      throw new ConflictException('Username is already taken');
     }
 
-    // Create a new user since no existing user was found
     const newUser = await this.usersService.create({
       email,
       password: null,
@@ -95,7 +94,6 @@ export class AuthService {
 
     return newUser;
   }
-
 
   async googleLogin(req: any) {
     if (!req.user) {

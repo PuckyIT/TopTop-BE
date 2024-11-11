@@ -1,18 +1,21 @@
 /* eslint-disable prettier/prettier */
 // user/user.controller.ts
 
-import { Controller, Get, Post, Body, Param, Delete, UseGuards, Put, Req, Patch, BadRequestException} from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, UseGuards, Put, Req, ForbiddenException, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UpdateUserDto } from 'src/users/dto/update-user.dto';
 import { ForgotPasswordDto } from 'src/users//dto/forgot-password.dto';
 import { ResetPasswordDto } from 'src/users/dto/reset-password.dto';
-import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from 'src/jwt/jwt-auth.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(
+    private readonly usersService: UsersService,
+  ) { }
+
 
   @Post('signup')
   create(@Body() createUserDto: CreateUserDto) {
@@ -24,27 +27,10 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return this.usersService.findOne(id);
-  }
-
-  @Put(':id')
-  async updateUserProfile(
-    @Param('id') id: string,
-    @Body() updateUserDto: UpdateUserDto
-  ) {
-    if (!id) {
-      throw new BadRequestException('User ID is required.');
-    }
-
-    // Cập nhật thông tin người dùng
-    const updatedUser = await this.usersService.update(id, updateUserDto);
-
-    return {
-      message: 'User updated successfully',
-      user: updatedUser,
-    };
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  async getProfile(@Req() req) {
+    return req.user;
   }
 
   @Delete(':id')
@@ -62,29 +48,19 @@ export class UsersController {
     return this.usersService.resetPassword(otp, resetPasswordDto);
   }
 
-  @Get('profile/:id')
-  @UseGuards(AuthGuard('jwt'))
-  async getProfile(@Param('id') id: string) {
-    return this.usersService.getProfile(id);
-  }
-
-  @Patch('profile')
   @UseGuards(JwtAuthGuard)
-  async updateProfile(@Req() req, @Body() updateData: UpdateUserDto) {
-    const userId = req.user._id;
-
-    // Nếu có avatar, đảm bảo rằng bạn gán đúng UID vào updateData
-    if (updateData.avatar && updateData.avatar.uid) {
-      // Giả sử avatar.uid là đường dẫn hoặc tên tệp sau khi upload
-      updateData.avatar = { uid: updateData.avatar.uid }; // Hoặc lưu URL nếu cần
+  @Put('profile/:id')
+  @UseInterceptors(FileInterceptor('avatar'))  // Handle 'avatar' file field
+  async updateUserProfile(
+    @Req() req,
+    @Param('id') id: string,
+    @UploadedFile() avatarFile: Express.Multer.File,
+    @Body() updateUserProfileDto: UpdateUserDto,
+  ) {
+    const userIdFromToken = req.user.id;
+    if (userIdFromToken !== id) {
+      throw new ForbiddenException("You are not allowed to update another user's profile.");
     }
-
-    // Cập nhật thông tin người dùng
-    const updatedUser = await this.usersService.updateUser(userId, updateData);
-
-    return {
-      message: 'Profile updated successfully',
-      user: updatedUser,
-    };
+    return this.usersService.updateUserProfile(id, updateUserProfileDto, avatarFile);
   }
 }
