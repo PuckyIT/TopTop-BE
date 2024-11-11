@@ -23,6 +23,12 @@ export class AuthController {
     return this.authService.login(user);
   }
 
+  @Post('refresh-token')
+  async refreshAccessToken(@Body() body: { refreshToken: string }) {
+    const { refreshToken } = body;
+    return await this.authService.refreshToken(refreshToken);
+  }
+
   @Post('logout')
   async logout(@Req() req: Request, @Res() res: Response) {
     return (res as Response).status(200).json({ message: 'Successfully logged out' });

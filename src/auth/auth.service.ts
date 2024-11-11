@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 // auth/auth.service.ts
 
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from 'src/users/users.service';
@@ -28,11 +28,13 @@ export class AuthService {
 
   async login(user: any) {
     const payload = { email: user.email, sub: user._id };
-    const access_token = this.jwtService.sign(payload);
+    const accessToken = this.jwtService.sign(payload);
+    const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
 
     // Trả về token và thông tin người dùng (không bao gồm mật khẩu)
     return {
-      access_token,
+      accessToken,
+      refreshToken,
       user: {
         id: user._id,
         email: user.email,
@@ -47,6 +49,20 @@ export class AuthService {
         likesCount: user.likesCount
       },
     };
+  }
+
+  async refreshToken(refreshToken: string) {
+    try {
+      // Verify refresh token
+      const payload = this.jwtService.verify(refreshToken, { secret: 'mySuperSecretKey' });
+
+      // Tạo lại access token mới
+      const newAccessToken = this.jwtService.sign({ email: payload.email, sub: payload.sub }, { expiresIn: '1h' });
+
+      return { access_token: newAccessToken };
+    } catch (e) {
+      throw new UnauthorizedException('Invalid or expired refresh token');
+    }
   }
 
   async validateOAuthUser(profile: any, accessToken: string, username?: string): Promise<User> {
