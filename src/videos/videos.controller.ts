@@ -3,7 +3,7 @@
 
 import { Controller, Get, Post, Body, Param, UseGuards, UseInterceptors, Req, UploadedFile } from '@nestjs/common';
 import { VideoService } from './videos.service';
-import { JwtAuthGuard } from 'src/jwt/jwt-auth.guard';
+import { JwtAuthGuard } from '../jwt/jwt-auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('videos')

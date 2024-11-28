@@ -7,7 +7,7 @@ import { Video } from './schemas/video.schema'; // Định nghĩa schema của V
 import { Injectable, NestMiddleware, UnauthorizedException } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import * as jwt from 'jsonwebtoken';
-import { CloudinaryService } from '@/configs/cloudinary/cloudinary.service';
+import { CloudinaryService } from '../configs/cloudinary';
 import { Types } from 'mongoose';
 
 @Injectable()

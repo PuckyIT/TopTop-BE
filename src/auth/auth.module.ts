@@ -5,16 +5,16 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { AuthService } from './auth.service';
-import { UsersModule } from 'src/users/users.module';
-import { JwtStrategy } from 'src/jwt/jwt.strategy';
+import { UsersModule } from '../users/users.module';
+import { JwtStrategy } from '../jwt/jwt.strategy';
 import { AuthController } from './auth.controller';
-import { GoogleStrategy } from 'src/strategies/google.strategy';
-import { GitHubStrategy } from 'src/strategies/github.strategy';
-import { MulterModule } from 'src/configs/multer/multer.module';
-import { CloudinaryModule } from 'src/configs/cloudinary/cloudinary.module';
+import { GoogleStrategy } from '../strategies/google.strategy';
+import { GitHubStrategy } from '../strategies/github.strategy';
+import { MulterModule } from '../configs/multer/multer.module';
+import { CloudinaryModule } from '../configs/cloudinary';
 import { MongooseModule } from '@nestjs/mongoose';
 import { TokenBlacklistSchema } from './schemas/token-blacklist.schema';
-import { UserSchema } from 'src/users/schemas/user.schema';
+import { UserSchema } from '../users/schemas/user.schema';
 
 @Module({
   imports: [

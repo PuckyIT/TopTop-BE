@@ -6,7 +6,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { VideoController } from './videos.controller';
 import { VideoService } from './videos.service';
 import { VideoSchema } from './schemas/video.schema';
-import { CloudinaryModule } from 'src/configs/cloudinary/cloudinary.module';
+import { CloudinaryModule } from '../configs/cloudinary';
 
 @Module({
     imports: [

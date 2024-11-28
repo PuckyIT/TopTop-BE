@@ -15,7 +15,7 @@ export class CloudinaryService {
       api_secret: this.configService.get('CLOUDINARY_API_SECRET'),
     });
   }
-  
+
   async uploadImage(fileBuffer: Buffer): Promise<any> {
     const timestamp = Math.floor(Date.now() / 1000);
     const stringToSign = `folder=Top-Top/images&timestamp=${timestamp}`;

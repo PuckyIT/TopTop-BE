@@ -6,8 +6,8 @@ import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './schemas/user.schema';
-import { MulterModule } from 'src/configs/multer/multer.module';
-import { CloudinaryModule } from 'src/configs/cloudinary/cloudinary.module';
+import { MulterModule } from '../configs/multer/multer.module';
+import { CloudinaryModule } from '../configs/cloudinary/cloudinary.module';
 
 @Module({
   imports: [MulterModule, CloudinaryModule, MongooseModule.forFeature([{ name: User.name, schema: UserSchema }])],

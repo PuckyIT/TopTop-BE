@@ -4,8 +4,8 @@
 import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { UsersService } from 'src/users/users.service';
-import { User } from 'src/users/schemas/user.schema';
+import { UsersService } from '../users/users.service';
+import { User } from '../users/schemas/user.schema';
 import axios from 'axios';
 import { Model } from 'mongoose';
 import { MailerService } from '@nestjs-modules/mailer';

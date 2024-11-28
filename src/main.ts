@@ -8,25 +8,29 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import express from 'express';
 
-let cachedApp: any;
+let cachedServer: any;
 
 async function bootstrap() {
-  if (!cachedApp) {
-    const expressApp = express();
-    const app = await NestFactory.create(AppModule, new ExpressAdapter(expressApp));
+  if (!cachedServer) {
+    const server = express();
+    const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
 
-    app.useGlobalPipes(new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-    }));
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+      }),
+    );
     app.setGlobalPrefix('api/v1');
 
+    // CORS
     app.enableCors({
-      origin: ['https://top-top.vercel.app', 'http://localhost:3000', 'http://192.168.1.22:3000', 'http://192.168.1.22:8080'],
+      origin: ['https://top-top.vercel.app', 'http://localhost:3000'],
       methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
       credentials: true,
     });
 
+    // Swagger
     const swaggerConfig = new DocumentBuilder()
       .setTitle('API Documentation')
       .setDescription('API description for your project')
@@ -36,13 +40,14 @@ async function bootstrap() {
     const document = SwaggerModule.createDocument(app, swaggerConfig);
     SwaggerModule.setup('api', app, document);
 
-    await app.init();
-    cachedApp = expressApp;
+    await app.init(); // Khởi tạo ứng dụng
+    cachedServer = server; // Lưu cache server
   }
-  return cachedApp;
+  return cachedServer;
 }
 
+// Export handler cho Vercel
 export default async (req: any, res: any) => {
-  const app = await bootstrap();
-  app(req, res);
+  const server = await bootstrap();
+  server(req, res);
 };

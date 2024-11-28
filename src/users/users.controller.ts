@@ -3,8 +3,8 @@
 
 import { Controller, Get, Body, Param, Delete, UseGuards, Put, Req, ForbiddenException, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { UpdateUserDto } from 'src/users/dto/update-user.dto';
-import { JwtAuthGuard } from 'src/jwt/jwt-auth.guard';
+import { UpdateUserDto } from '../users/dto/update-user.dto';
+import { JwtAuthGuard } from '../jwt/jwt-auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('users')

@@ -1,12 +1,12 @@
 /* eslint-disable prettier/prettier */
 // user/user.service.ts
 
-import { UpdateUserDto } from 'src/users/dto/update-user.dto';
+import { UpdateUserDto } from '../users/dto/update-user.dto';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from './schemas/user.schema';
-import { CloudinaryService } from '@/configs/cloudinary/cloudinary.service';
+import { CloudinaryService } from '../configs/cloudinary/cloudinary.service';
 
 @Injectable()
 export class UsersService {
