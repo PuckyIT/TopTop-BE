@@ -1,4 +1,5 @@
 /* eslint-disable prettier/prettier */
+// app.module.ts
 
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
@@ -10,11 +11,13 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { AuthModule } from './auth/auth.module';
 import { VideoModule } from './videos/videos.module';
 import { MulterModule } from './configs/multer/multer.module';
+import { CloudinaryModule } from './configs/cloudinary/cloudinary.module';
 
 @Module({
   imports: [
     UsersModule,
     AuthModule,
+    CloudinaryModule,
     VideoModule,
     MulterModule,
     ConfigModule.forRoot({ isGlobal: true }),

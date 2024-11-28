@@ -3,38 +3,46 @@
 
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger'; // Nhập các mô-đun Swagger
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { ExpressAdapter } from '@nestjs/platform-express';
+import express from 'express';
+
+let cachedApp: any;
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  const configService = app.get(ConfigService);
-  const port = configService.get('PORT');
+  if (!cachedApp) {
+    const expressApp = express();
+    const app = await NestFactory.create(AppModule, new ExpressAdapter(expressApp));
 
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,
-    forbidNonWhitelisted: true,
-  }));
-  app.setGlobalPrefix('api/v1');
+    app.useGlobalPipes(new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }));
+    app.setGlobalPrefix('api/v1');
 
-  // Bật CORS
-  app.enableCors({
-    origin: ['https://top-top.vercel.app', 'http://localhost:3000', 'http://192.168.1.22:3000', 'http://192.168.1.22:8080'],
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,
-  });
+    app.enableCors({
+      origin: ['https://top-top.vercel.app', 'http://localhost:3000', 'http://192.168.1.22:3000', 'http://192.168.1.22:8080'],
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+      credentials: true,
+    });
 
-  // Cấu hình Swagger
-  const swaggerConfig = new DocumentBuilder()
-    .setTitle('API Documentation') // Tiêu đề cho tài liệu
-    .setDescription('API description for your project') // Mô tả cho tài liệu
-    .setVersion('1.0') // Phiên bản API
-    .build();
+    const swaggerConfig = new DocumentBuilder()
+      .setTitle('API Documentation')
+      .setDescription('API description for your project')
+      .setVersion('1.0')
+      .build();
 
-  const document = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup('api', app, document); // Thiết lập đường dẫn cho Swagger
+    const document = SwaggerModule.createDocument(app, swaggerConfig);
+    SwaggerModule.setup('api', app, document);
 
-  await app.listen(port, '0.0.0.0');
+    await app.init();
+    cachedApp = expressApp;
+  }
+  return cachedApp;
 }
-bootstrap();
+
+export default async (req: any, res: any) => {
+  const app = await bootstrap();
+  app(req, res);
+};
